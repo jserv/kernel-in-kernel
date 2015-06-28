@@ -14,20 +14,14 @@ volatile int time_count = 0;
  */
 void my_timer_handler(void)
 {
-#if 1
-	if (time_count % 1000 == 0 && my_need_sched != 1) {
-		printk(KERN_NOTICE ">>> %s <<<\n", __func__);
+	if (time_count % 1000 == 0 && my_need_sched != 1)
 		my_need_sched = 1;
-	} 
 	time_count++;
-#endif
-	return;  	
 }
 
 void my_schedule(void)
 {
-	tPCB *next;
-	tPCB *prev;
+	tPCB *next, *prev;
 
 	if (my_current_task == NULL || my_current_task->next == NULL)
 		return;
@@ -67,10 +61,8 @@ void my_schedule(void)
 			"movl $1f,%1\n\t"	/* save eip */	
 			"pushl %3\n\t" 
 			"ret\n\t"		/* restore  eip */
-			: "=m" (prev->thread.sp),
-			  "=m" (prev->thread.ip)
-			: "m" (next->thread.sp),
-			  "m" (next->thread.ip)
+			: "=m" (prev->thread.sp), "=m" (prev->thread.ip)
+			: "m" (next->thread.sp), "m" (next->thread.ip)
 		);          
 	}
 }

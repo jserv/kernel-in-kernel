@@ -2,13 +2,15 @@
  *  Kernel internal PCB types
  */
 
+#include <linux/types.h>
+
 #define MAX_TASK_NUM		4
 #define KERNEL_STACK_SIZE	(1024 * 8)
 
 /* CPU-specific state of this task */
 struct Thread {
-	unsigned long ip;
-	unsigned long sp;
+	uintptr_t ip;
+	uintptr_t sp;
 };
 
 typedef struct PCB {
@@ -17,7 +19,7 @@ typedef struct PCB {
 	char stack[KERNEL_STACK_SIZE];
 	/* CPU-specific state of this task */
 	struct Thread thread;
-	unsigned long task_entry;
+	uintptr_t task_entry;
 	struct PCB *next;
 } tPCB;
 
