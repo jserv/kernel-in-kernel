@@ -7,6 +7,7 @@ KERNEL = linux-4.1.tar.xz
 LINUX_FILE = downloads/$(KERNEL)
 LINUX_MD5 = "fe9dc0f6729f36400ea81aa41d614c37"
 PATCH_FILE = linux-4_1-mykernel.patch
+OUT = $(PWD)/out
 
 ALL = stamps/downloads stamps/setup stamps/build
 .PHONY: all
@@ -45,8 +46,8 @@ stamps/patch:
 
 stamps/config:
 	(cd linux-4.1; \
-	 cp -f ../configs/mini-x86.config .config; \
-	 make oldconfig)
+	 cp -f ../configs/mini-x86.config $(OUT)/.config; \
+	 make O=$(OUT) oldconfig)
 	@touch $@
 
 # number of CPUs
@@ -57,14 +58,15 @@ endif
 
 stamps/build: linux-4.1/Makefile \
               src/myinterrupt.c src/mymain.c src/mypcb.h
-	(cd linux-4.1; $(MAKE) -j $(CPUS))
+	mkdir -p $(OUT)
+	(cd linux-4.1; $(MAKE) O=$(OUT) -j $(CPUS))
 	@touch $@
 
 run: linux-4.1/arch/x86/boot/bzImage
 	qemu-system-i386 -kernel $<
 
 clean:
-	$(MAKE) -C linux-4.1 clean
+	$(MAKE) -C linux-4.1 O=$(OUT) clean
 	# FIXME: clean directory src as well
 	rm -f src/built-in.o src/.built-in.o.cmd \
 	      src/modules.order \
