@@ -1,8 +1,4 @@
-#include <linux/types.h>
-#include <linux/string.h>
-#include <linux/ctype.h>
-#include <linux/tty.h>
-#include <linux/vmalloc.h>
+#include <linux/printk.h>
 
 #include "mypcb.h"
 
