@@ -1,7 +1,8 @@
 # intermediate directories
 downloads/
 linux-4.1/
-stamps/
+.stamps/
+.out/
 
 # Normal rules
 .*

@@ -7,16 +7,16 @@ KERNEL = linux-4.1.tar.xz
 LINUX_FILE = downloads/$(KERNEL)
 LINUX_MD5 = "fe9dc0f6729f36400ea81aa41d614c37"
 PATCH_FILE = linux-4_1-mykernel.patch
-OUT = $(PWD)/out
+OUT = $(PWD)/.out
 
-ALL = stamps/downloads stamps/setup stamps/build
+ALL = .stamps/downloads .stamps/setup .stamps/build
 .PHONY: all
 all: $(ALL)
 
 TMPFILE := $(shell mktemp)
 
-stamps:
-	@mkdir -p stamps
+.stamps:
+	@mkdir -p $@
 
 to-md5 = $1 $(addsuffix .md5,$1)
 %.md5: FORCE
@@ -27,24 +27,25 @@ $(LINUX_FILE):
 	mkdir -p downloads
 	(cd downloads; wget -c $(LINUX_URL)/$(KERNEL))
 
-stamps/downloads: $(call to-md5,$(LINUX_FILE)) stamps
+.stamps/downloads: $(call to-md5,$(LINUX_FILE)) .stamps
 	@echo $(LINUX_MD5) > $(TMPFILE)
 	@cmp -n 32 $(TMPFILE) $<.md5 >/dev/null || (echo "File checksum mismatch!"; exit 1)
 	@touch $@
 
-stamps/setup: stamps stamps/extract stamps/patch stamps/config
+.stamps/setup: .stamps/extract .stamps/patch .stamps/config
 	@touch $@
 
-stamps/extract: downloads/linux-4.1.tar.xz
+.stamps/extract: downloads/linux-4.1.tar.xz
 	tar Jxf $<
 	@touch $@
 
-stamps/patch:
+.stamps/patch:
 	(cd linux-4.1; \
 	 patch --dry-run -f -p1 < ../patches/$(PATCH_FILE) >/dev/null && \
 	 patch -p1 < ../patches/$(PATCH_FILE)) || touch $@
 
-stamps/config:
+.stamps/config:
+	@mkdir -p $(OUT)
 	(cd linux-4.1; \
 	 cp -f ../configs/mini-x86.config $(OUT)/.config; \
 	 make O=$(OUT) oldconfig)
@@ -56,13 +57,12 @@ CPUS := $(shell grep -c ^processor /proc/cpuinfo 2>/dev/null || \
           sysctl -n hw.ncpu)                                          
 endif
 
-stamps/build: linux-4.1/Makefile \
+.stamps/build: linux-4.1/Makefile \
               src/myinterrupt.c src/mymain.c src/mypcb.h
-	mkdir -p $(OUT)
 	(cd linux-4.1; $(MAKE) O=$(OUT) -j $(CPUS))
 	@touch $@
 
-run: linux-4.1/arch/x86/boot/bzImage
+run: $(OUT)/arch/x86/boot/bzImage
 	qemu-system-i386 -kernel $<
 
 clean:
@@ -72,8 +72,8 @@ clean:
 	      src/modules.order \
 	      src/myinterrupt.o src/.myinterrupt.o.cmd \
 	      src/mymain.o src/.mymain.o.cmd
-	rm -f stamps/build
+	rm -f .stamps/build
 
 distclean: clean
-	rm -rf stamps
+	rm -rf .stamps .out
 	rm -rf linux-4.1
