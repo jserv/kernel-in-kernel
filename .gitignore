@@ -1,0 +1,10 @@
+# intermediate directories
+downloads/
+linux-4.1/
+stamps/
+
+# Normal rules
+.*
+*.o
+*.o.*
+*.order
