@@ -37,6 +37,7 @@ $(LINUX_FILE):
 
 .stamps/extract: downloads/linux-4.1.tar.xz
 	tar Jxf $<
+	(cd linux-4.1; ln -s ../src mysrc)
 	@touch $@
 
 .stamps/patch:
@@ -67,11 +68,6 @@ run: $(OUT)/arch/x86/boot/bzImage
 
 clean:
 	$(MAKE) -C linux-4.1 O=$(OUT) clean
-	# FIXME: clean directory src as well
-	rm -f src/built-in.o src/.built-in.o.cmd \
-	      src/modules.order \
-	      src/myinterrupt.o src/.myinterrupt.o.cmd \
-	      src/mymain.o src/.mymain.o.cmd
 	rm -f .stamps/build
 
 distclean: clean
