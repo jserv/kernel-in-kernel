@@ -25,8 +25,8 @@ Modify Your Own Kernel
 Hacking kernel is interesting, and you should take a look over the files in
 the `src` directory:
 * `mypcb.h`: the cutomized process control block
-* `myinterrupt.c`: timer interrupt handler and simple context switcher
-* `mymain.c`: entry point
+* `scheduler.c`: timer interrupt handler and simple scheduler
+* `main.c`: entry point
 
 Running kernel-in-kernel
 ------------------------

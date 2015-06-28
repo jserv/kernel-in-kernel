@@ -1,7 +1,3 @@
-/*
- *  Kernel internal my_timer_handler
- */
-
 #include <linux/printk.h>
 
 #include "mypcb.h"
