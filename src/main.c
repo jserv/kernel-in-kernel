@@ -18,7 +18,7 @@ void __init my_start_kernel(void)
 	task[pid].state = 0; /* -1 unrunnable, 0 runnable, >0 stopped */
 	task[pid].task_entry = task[pid].thread.ip = (unsigned long) my_process;
 	task[pid].thread.sp =
-		(unsigned long) &task[pid].stack[KERNEL_STACK_SIZE-1];
+		(unsigned long) &task[pid].stack[KERNEL_STACK_SIZE - 1];
 	task[pid].next = &task[pid];
 	/* fork more process */
 	for (i = 1; i < MAX_TASK_NUM; i++) {
@@ -26,7 +26,7 @@ void __init my_start_kernel(void)
 		task[i].pid = i;
 		task[i].state = -1;
 		task[i].thread.sp =
-			(unsigned long) &task[i].stack[KERNEL_STACK_SIZE-1];
+			(unsigned long) &task[i].stack[KERNEL_STACK_SIZE - 1];
 		task[i].next = task[i-1].next;
 		task[i-1].next = &task[i];
 	}

@@ -33,14 +33,14 @@ Running kernel-in-kernel
 Run `make run` and and you should see this:
 
 ```
-this is process 0 +
 this is process 0 -
-this is process 1 +
+this is process 0 +
 this is process 1 -
-this is process 2 +
+this is process 1 +
 this is process 2 -
-this is process 3 +
+this is process 2 +
 this is process 3 -
+this is process 3 +
 ```
 
 Licensing
