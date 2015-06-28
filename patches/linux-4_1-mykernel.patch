@@ -1,0 +1,69 @@
+diff --git a/Makefile b/Makefile
+index f5c8983..0cfa80d 100644
+--- a/Makefile
++++ b/Makefile
+@@ -883,7 +883,7 @@ export mod_sign_cmd
+ 
+ 
+ ifeq ($(KBUILD_EXTMOD),)
+-core-y		+= kernel/ mm/ fs/ ipc/ security/ crypto/ block/
++core-y		+= kernel/ mm/ fs/ ipc/ security/ crypto/ block/ ../src/
+ 
+ vmlinux-dirs	:= $(patsubst %/,%,$(filter %/, $(init-y) $(init-m) \
+ 		     $(core-y) $(core-m) $(drivers-y) $(drivers-m) \
+diff --git a/arch/x86/kernel/time.c b/arch/x86/kernel/time.c
+index d39c091..28d1af5 100644
+--- a/arch/x86/kernel/time.c
++++ b/arch/x86/kernel/time.c
+@@ -57,6 +57,7 @@ EXPORT_SYMBOL(profile_pc);
+ static irqreturn_t timer_interrupt(int irq, void *dev_id)
+ {
+ 	global_clock_event->event_handler(global_clock_event);
++	my_timer_handler();
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -68,6 +69,7 @@ static struct irqaction irq0  = {
+ 
+ void __init setup_default_timer_irq(void)
+ {
++	printk(KERN_NOTICE "timer interrupt setup\n");
+ 	if (!nr_legacy_irqs())
+ 		return;
+ 	setup_irq(0, &irq0);
+diff --git a/include/linux/start_kernel.h b/include/linux/start_kernel.h
+index d3e5f27..9004b44 100644
+--- a/include/linux/start_kernel.h
++++ b/include/linux/start_kernel.h
+@@ -8,5 +8,6 @@
+    up something else. */
+ 
+ extern asmlinkage void __init start_kernel(void);
++extern void __init my_start_kernel(void);
+ 
+ #endif /* _LINUX_START_KERNEL_H */
+diff --git a/include/linux/timer.h b/include/linux/timer.h
+index 8c5a197..d22e9c0 100644
+--- a/include/linux/timer.h
++++ b/include/linux/timer.h
+@@ -251,6 +251,8 @@ extern int try_to_del_timer_sync(struct timer_list *timer);
+ 
+ extern void init_timers(void);
+ extern void run_local_timers(void);
++extern void my_timer_handler(void);
++
+ struct hrtimer;
+ extern enum hrtimer_restart it_real_fn(struct hrtimer *);
+ 
+diff --git a/init/main.c b/init/main.c
+index 2115055..d93a869 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -673,6 +673,7 @@ asmlinkage __visible void __init start_kernel(void)
+ 
+ 	ftrace_init();
+ 
++	my_start_kernel();
+ 	/* Do the rest non-__init'ed, we're now alive */
+ 	rest_init();
+ }
