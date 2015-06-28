@@ -2,8 +2,7 @@
 
 #include "mypcb.h"
 
-tPCB task[MAX_TASK_NUM];
-tPCB *my_current_task = NULL;
+myPCB task[MAX_TASK_NUM], *my_current_task = NULL;
 volatile int my_need_sched = 0;
 
 void my_process(void);
@@ -23,7 +22,7 @@ void __init my_start_kernel(void)
 
 	/* fork more process */
 	for (i = 1; i < MAX_TASK_NUM; i++) {
-		memcpy(&task[i], &task[0], sizeof(tPCB));
+		memcpy(&task[i], &task[0], sizeof(myPCB));
 		task[i].pid = i;
 		task[i].state = -1;
 		task[i].thread.sp =

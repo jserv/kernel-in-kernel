@@ -2,8 +2,7 @@
 
 #include "mypcb.h"
 
-extern tPCB task[MAX_TASK_NUM];
-extern tPCB *my_current_task;
+extern myPCB task[MAX_TASK_NUM], *my_current_task;
 extern volatile int my_need_sched;
 volatile int time_count = 0;
 
@@ -21,7 +20,7 @@ void my_timer_handler(void)
 
 void my_schedule(void)
 {
-	tPCB *next, *prev;
+	myPCB *next, *prev;
 
 	if (my_current_task == NULL || my_current_task->next == NULL)
 		return;
