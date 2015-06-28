@@ -3,8 +3,8 @@ obj-y = mymain.o myinterrupt.o
 
 # the generic parts
 LINUX_URL = https://www.kernel.org/pub/linux/kernel/v4.x
-KERNEL = linux-4.1.tar.xz
-LINUX_FILE = downloads/$(KERNEL)
+KERNEL = linux-4.1
+LINUX_FILE = downloads/$(KERNEL).tar.xz
 LINUX_MD5 = "fe9dc0f6729f36400ea81aa41d614c37"
 PATCH_FILE = linux-4_1-mykernel.patch
 OUT = $(PWD)/.out
@@ -25,7 +25,7 @@ FORCE:
 
 $(LINUX_FILE):
 	mkdir -p downloads
-	(cd downloads; wget -c $(LINUX_URL)/$(KERNEL))
+	(cd downloads; wget -c $(LINUX_URL)/$(KERNEL).tar.xz)
 
 .stamps/downloads: $(call to-md5,$(LINUX_FILE)) .stamps
 	@echo $(LINUX_MD5) > $(TMPFILE)
@@ -35,19 +35,19 @@ $(LINUX_FILE):
 .stamps/setup: .stamps/extract .stamps/patch .stamps/config
 	@touch $@
 
-.stamps/extract: downloads/linux-4.1.tar.xz
+.stamps/extract: $(LINUX_FILE)
 	tar Jxf $<
-	(cd linux-4.1; ln -s ../src mysrc)
+	(cd $(KERNEL); ln -s ../src mysrc)
 	@touch $@
 
 .stamps/patch:
-	(cd linux-4.1; \
+	(cd $(KERNEL); \
 	 patch --dry-run -f -p1 < ../patches/$(PATCH_FILE) >/dev/null && \
 	 patch -p1 < ../patches/$(PATCH_FILE)) || touch $@
 
 .stamps/config:
 	@mkdir -p $(OUT)
-	(cd linux-4.1; \
+	(cd $(KERNEL); \
 	 cp -f ../configs/mini-x86.config $(OUT)/.config; \
 	 make O=$(OUT) oldconfig)
 	@touch $@
@@ -58,18 +58,18 @@ CPUS := $(shell grep -c ^processor /proc/cpuinfo 2>/dev/null || \
           sysctl -n hw.ncpu)                                          
 endif
 
-.stamps/build: linux-4.1/Makefile \
+.stamps/build: $(KERNEL)/Makefile \
               src/scheduler.c src/main.c src/mypcb.h
-	(cd linux-4.1; $(MAKE) O=$(OUT) -j $(CPUS))
+	(cd $(KERNEL); $(MAKE) O=$(OUT) -j $(CPUS))
 	@touch $@
 
 run: $(OUT)/arch/x86/boot/bzImage
 	qemu-system-i386 -kernel $<
 
 clean:
-	$(MAKE) -C linux-4.1 O=$(OUT) clean
+	$(MAKE) -C $(KERNEL) O=$(OUT) clean
 	rm -f .stamps/build
 
 distclean: clean
-	rm -rf .stamps .out
-	rm -rf linux-4.1
+	rm -rf .stamps $(OUT)
+	rm -rf $(KERNEL)
