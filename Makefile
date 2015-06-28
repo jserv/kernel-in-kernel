@@ -59,7 +59,7 @@ CPUS := $(shell grep -c ^processor /proc/cpuinfo 2>/dev/null || \
 endif
 
 .stamps/build: linux-4.1/Makefile \
-              src/myinterrupt.c src/mymain.c src/mypcb.h
+              src/interrupt.c src/main.c src/mypcb.h
 	(cd linux-4.1; $(MAKE) O=$(OUT) -j $(CPUS))
 	@touch $@
 
