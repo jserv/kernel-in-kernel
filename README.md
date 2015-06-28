@@ -17,8 +17,11 @@ Unless otherwise noted, file and directory names refer to this repository.
 
 2. Return to the kernel-in-kernel top-level directory. Do a `make`. This will
    do several things including downloading Linux kernel 4.1 as the base of
-   your own kernel, configuring the minimal development environment, and and
+   your own kernel, configuring the minimal development environment, and
    building everything from scratch.
+
+3. At present, only IA32 image is generated, but it should be reasonably easy
+   to enable other architectures originally supported by Linux kernel.
 
 Modify Your Own Kernel
 ----------------------
