@@ -36,10 +36,8 @@ void __init my_start_kernel(void)
 	my_current_task = &task[pid];
 	asm volatile(
 		"movl %1,%%esp\n\t" 	/* set task[pid].thread.sp to esp */
-		"pushl %1\n\t" 	        /* push ebp */
 		"pushl %0\n\t" 	        /* push task[pid].thread.ip */
-		"ret\n\t"		/* pop task[pid].thread.ip to eip */
-		"popl %%ebp\n\t"
+		"ret\n\t"		/* pop task[pid].thread.ip to eip */		
 		: 
 		: "c" (task[pid].thread.ip),
 		  "d" (task[pid].thread.sp)	/* input c/d mean %ecx/%edx */
