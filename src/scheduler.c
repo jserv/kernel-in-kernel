@@ -39,14 +39,12 @@ void my_schedule(void)
 	if (next->state == 0) { /* -1 unrunnable, 0 runnable, >0 stopped */
 		/* switch to next process */
 		asm volatile(	
-			"pushl %%ebp\n\t"	/* save ebp */
 			"movl %%esp,%0\n\t"	/* save esp */
 			"movl %2,%%esp\n\t"	/* restore  esp */
 			"movl $1f,%1\n\t"	/* save eip */	
 			"pushl %3\n\t" 
 			"ret\n\t"		/* restore  eip */
 			"1:\t"			/* next process start here */
-			"popl %%ebp\n\t"
 			: "=m" (prev->thread.sp), "=m" (prev->thread.ip)
 			: "m" (next->thread.sp), "m" (next->thread.ip)
 		); 
@@ -60,10 +58,8 @@ void my_schedule(void)
 		       prev->pid, next->pid);
 		/* switch to new process */
 		asm volatile(	
-			"pushl %%ebp\n\t"	/* save ebp */
 			"movl %%esp,%0\n\t"	/* save esp */
 			"movl %2,%%esp\n\t"	/* restore esp */
-			"movl %2,%%ebp\n\t"	/* restore ebp */
 			"movl $1f,%1\n\t"	/* save eip */	
 			"pushl %3\n\t" 
 			"ret\n\t"		/* restore  eip */
