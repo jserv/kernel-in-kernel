@@ -30,36 +30,21 @@ void my_schedule(void)
 	next = my_current_task->next;
 	prev = my_current_task;
 	if (next->state == 0) { /* -1 unrunnable, 0 runnable, >0 stopped */
-		/* switch to next process */
+		my_current_task = next; 
+                /* switch to next process */
 		asm volatile(	
-                        "pushfl\n\t"
+                       /* "pushfl\n\t" */	
 			"movl %%esp,%0\n\t"	/* save esp */
 			"movl %2,%%esp\n\t"	/* restore  esp */
 			"movl $1f,%1\n\t"	/* save eip */	
-			"pushl %3\n\t" 
-			"ret\n\t"		/* restore  eip */
+			"jmp %3\n"
 			"1:\t"			/* next process start here */
-                        "popfl"
+                       /*  "popfl" */
 			: "=m" (prev->thread.sp), "=m" (prev->thread.ip)
 			: "m" (next->thread.sp), "m" (next->thread.ip)
 		); 
-		my_current_task = next; 
-		printk(KERN_NOTICE ">>>switch from %d to %d<<<\n",
-		       prev->pid, next->pid);   	
-	} else {
-		next->state = 0;
-		my_current_task = next;
+		
 		printk(KERN_NOTICE ">>>switch from %d to %d<<<\n",
 		       prev->pid, next->pid);
-		/* switch to new process */
-		asm volatile(	
-			"movl %%esp,%0\n\t"	/* save esp */
-			"movl %2,%%esp\n\t"	/* restore esp */
-			"movl $1f,%1\n\t"	/* save eip */	
-			"pushl %3\n\t" 
-			"ret\n\t"		/* restore  eip */
-			: "=m" (prev->thread.sp), "=m" (prev->thread.ip)
-			: "m" (next->thread.sp), "m" (next->thread.ip)
-		);          
-	}
+         }
 }

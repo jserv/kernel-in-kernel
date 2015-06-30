@@ -24,7 +24,7 @@ void __init my_start_kernel(void)
 	for (i = 1; i < MAX_TASK_NUM; i++) {
 		memcpy(&task[i], &task[0], sizeof(myPCB));
 		task[i].pid = i;
-		task[i].state = -1;
+		task[i].state = 0;
 		task[i].thread.sp =
 			(uintptr_t) &task[i].stack[KERNEL_STACK_SIZE - 1];
 		task[i].next = task[i-1].next;
@@ -35,12 +35,10 @@ void __init my_start_kernel(void)
 	pid = 0;
 	my_current_task = &task[pid];
 	asm volatile(
-		"movl %1,%%esp\n\t" 	/* set task[pid].thread.sp to esp */
-		"pushl %0\n\t" 	        /* push task[pid].thread.ip */
-		"ret\n\t"		/* pop task[pid].thread.ip to eip */		
+		"movl %0,%%esp\n\t" 	/* set task[pid].thread.sp to esp */
+		"jmp my_process\n"
 		: 
-		: "c" (task[pid].thread.ip),
-		  "d" (task[pid].thread.sp)	/* input c/d mean %ecx/%edx */
+		: "c" (task[pid].thread.sp)	/* input c mean /%edx */
 	);
 }
 
