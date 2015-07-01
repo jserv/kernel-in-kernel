@@ -1,7 +1,3 @@
-/*
- *  Kernel internal PCB types
- */
-
 #include <linux/types.h>
 
 #define MAX_TASK_NUM		4

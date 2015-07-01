@@ -5,7 +5,7 @@
 myPCB task[MAX_TASK_NUM], *my_current_task = NULL;
 volatile int my_need_sched = 0;
 
-void my_process(void);
+static void my_process(void);
 
 void __init my_start_kernel(void)
 {
@@ -42,7 +42,7 @@ void __init my_start_kernel(void)
 	);
 }
 
-void my_process(void)
+static void my_process(void)
 {
 	int i = 0;
 	while (1) {
