@@ -14,7 +14,7 @@ void __init my_start_kernel(void)
 
 	/* Initialize process 0 */
 	task[pid].pid = pid;
-	task[pid].state = 0; /* -1 unrunnable, 0 runnable, >0 stopped */
+	task[pid].state = S_runnable;
 	task[pid].task_entry = task[pid].thread.ip = (uintptr_t) my_process;
 	task[pid].thread.sp =
 		(uintptr_t) &task[pid].stack[KERNEL_STACK_SIZE - 1];
@@ -24,7 +24,7 @@ void __init my_start_kernel(void)
 	for (i = 1; i < MAX_TASK_NUM; i++) {
 		memcpy(&task[i], &task[0], sizeof(myPCB));
 		task[i].pid = i;
-		task[i].state = 0;
+		task[i].state = S_stopped;
 		task[i].thread.sp =
 			(uintptr_t) &task[i].stack[KERNEL_STACK_SIZE - 1];
 		task[i].next = task[i-1].next;

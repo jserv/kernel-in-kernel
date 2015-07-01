@@ -29,8 +29,10 @@ void my_schedule(void)
 	/* schedule */
 	next = my_current_task->next;
 	prev = my_current_task;
-	if (next->state == 0) { /* -1 unrunnable, 0 runnable, >0 stopped */
-		my_current_task = next; 
+	if (next->state == S_runnable) {
+		my_current_task = next;
+		printk(KERN_NOTICE ">>>switch from %d to %d<<<\n",
+			prev->pid, next->pid);
                 /* switch to next process */
 		asm volatile(	
 			"movl	%%esp, %0\n\t"	/* save esp */
@@ -40,9 +42,11 @@ void my_schedule(void)
 			"1:\t"			/* next process start here */
 			: "=m" (prev->thread.sp), "=m" (prev->thread.ip)
 			: "m" (next->thread.sp), "m" (next->thread.ip)
-		); 
-		
-		printk(KERN_NOTICE ">>>switch from %d to %d<<<\n",
-		       prev->pid, next->pid);
-         }
+		);
+	} else {
+		next->state = S_runnable;
+		my_current_task = next;
+		printk(KERN_NOTICE ">>>switch to new process %d<<<\n",
+			next->pid);
+	}
 }

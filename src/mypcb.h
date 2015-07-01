@@ -9,9 +9,10 @@ struct myThread {
 	uintptr_t sp;
 };
 
+enum myState { S_unrunnable = -1, S_runnable = 0, S_stopped = 1 };
 typedef struct _myPCB {
 	int pid;
-	volatile long state;	/* -1 unrunnable, 0 runnable, >0 stopped */
+	volatile enum myState state;
 	char stack[KERNEL_STACK_SIZE];
 	/* CPU-specific state of this task */
 	struct myThread thread;
