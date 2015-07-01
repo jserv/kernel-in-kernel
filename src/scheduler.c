@@ -33,10 +33,10 @@ void my_schedule(void)
 		my_current_task = next; 
                 /* switch to next process */
 		asm volatile(	
-			"movl %%esp,%0\n\t"	/* save esp */
-			"movl %2,%%esp\n\t"	/* restore  esp */
-			"movl $1f,%1\n\t"	/* save eip */	
-			"jmp *%3\n"
+			"movl	%%esp, %0\n\t"	/* save esp */
+			"movl	%2, %%esp\n\t"	/* restore  esp */
+			"movl	$1f, %1\n\t"	/* save eip */
+			"jmp	*%3\n"
 			"1:\t"			/* next process start here */
 			: "=m" (prev->thread.sp), "=m" (prev->thread.ip)
 			: "m" (next->thread.sp), "m" (next->thread.ip)

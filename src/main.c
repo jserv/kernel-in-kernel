@@ -35,8 +35,8 @@ void __init my_start_kernel(void)
 	pid = 0;
 	my_current_task = &task[pid];
 	asm volatile(
-		"movl %0,%%esp\n\t" 	/* set task[pid].thread.sp to esp */
-		"jmp my_process\n"
+		"movl	%0, %%esp\n\t" 	/* set task[pid].thread.sp to esp */
+		"jmp	my_process\n"
 		: 
 		: "c" (task[pid].thread.sp)	/* input c mean /%edx */
 	);
